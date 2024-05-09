@@ -1,7 +1,12 @@
+@font-face {
+    font-family: Retro;
+    src: url(../fonts/upheaval/upheavtt.ttf);
+}
+
 *{
     padding: 0%;
     margin: 0%;
-    font-family: cursive;
+    font-family: Retro;
 }
 
 body{
@@ -21,13 +26,35 @@ main{
     gap: 10px;
 }
 
+.personagens{
+    display: flex;
+    gap: 6px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.personagens button{
+    padding: 5px;
+}
+
 .personagensInfo{
     width: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 10px;
 }
 
 .personagensInfo img{
     width: 40%;
+}
+
+@media screen and (max-width:900px) {
+    *{
+        font-size: 10pt;
+    }
+
+    main{
+        width: 90%;
+    }
 }
