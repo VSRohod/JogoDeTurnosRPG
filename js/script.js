@@ -2,7 +2,7 @@
 // ações personagem
 
 function curar(indice){
-    personagens[indice].curar(1);
+    personagens[indice].curar(indice);
 }
 
 function atacar(indice){

@@ -37,7 +37,30 @@ class Personagem {
         }
         
         this.ressucitar = function(alvo){
-            personagens[alvo].vida = personagens[alvo].vidaMax
+            let pocao = personagens[alvo].items.indexOf("Poção da fênix");
+            if(pocao >= 1){
+                let usarPocao = confirm("Deseja usar Poção da fênix?");
+
+                if(usarPocao == true){
+                    personagens[alvo].vida = personagens[alvo].vidaMax
+                    personagens[alvo].items.splice(pocao,1);
+                    alert("Poção da fênix usada!");
+                }else{
+                    alert("Game Over :(")
+                }
+            }
+            else{
+                if(personagens[alvo].id == 0){
+                    let jogarNovamente = confirm("Você morreu! Tentar novamente?");
+                    if(jogarNovamente == true){
+                        location.reload();
+                    }else{
+                        alert("Game Over :(")
+                    }
+                }else{
+                    personagens[alvo].vida = personagens[alvo].vidaMax
+                }
+            }
             listarEstatisticas();
         }
 
@@ -60,11 +83,23 @@ class Personagem {
 
         }
 
-        this.curar = function(cura){
-            if(this.vida == 0){
-                this.ressucitar(this.id);
-            }else if(this.vida < this.vidaMax){
-                this.vida += cura;
+        this.curar = function(alvo){
+            if(personagens[alvo].vida <= 0){
+                personagens[alvo].ressucitar(alvo);
+            }else{
+                let pocao = personagens[alvo].items.indexOf("Poção de cura");
+
+                if(pocao >= 1){
+                    let usarPocao = confirm("Deseja usar Poção de cura?");
+
+                    if(usarPocao == true){
+                        personagens[alvo].vida += 3;
+                        personagens[alvo].items.splice(pocao,1);
+                        alert("Poção da cura usada!");
+                    }
+                }else{
+                    alert("Você está sem poções!");
+                }
                 listarEstatisticas();
             }
                 
@@ -80,6 +115,8 @@ class Personagem {
             if(this.xp == 10){
                 this.nivel += 1;
                 this.dano = 3
+                this.items.push("Poção da fênix");
+                this.items.push("Poção de cura");
             }else if(this.xp == 20){
                 this.nivel += 1;
                 this.dano = 5
