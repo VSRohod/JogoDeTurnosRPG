@@ -20,6 +20,20 @@ function listarEstatisticas(){
     });
 }
 
+// sprites
+function atualizarSprites(alvo,sprite,tempo){
+    if(tempo == 0){
+        personagens[alvo].imgSrc = `images/${sprite}`;
+        listarEstatisticas(); 
+    }else{
+        setTimeout(function(){
+            personagens[alvo].imgSrc = `images/${sprite}`;
+            listarEstatisticas(); 
+        },300);
+    }
+}
+
+
 class Personagem {
     constructor(id,nome,imgSrc,vidaMax,dano,itemPrincipal){
         this.id = id;
@@ -33,7 +47,9 @@ class Personagem {
         this.items = [itemPrincipal];
 
         this.morrer = function(alvo){
-            this.ressucitar(alvo);
+            setTimeout(function(){
+                personagens[alvo].ressucitar(alvo);
+            },600);
         }
         
         this.ressucitar = function(alvo){
@@ -42,9 +58,14 @@ class Personagem {
                 let usarPocao = confirm("Deseja usar Poção da fênix?");
 
                 if(usarPocao == true){
-                    personagens[alvo].vida = personagens[alvo].vidaMax
-                    personagens[alvo].items.splice(pocao,1);
-                    alert("Poção da fênix usada!");
+                    atualizarSprites(alvo,"playerrenascer.svg",0);
+                    setTimeout(function(){
+                        personagens[alvo].vida = personagens[alvo].vidaMax
+                        personagens[alvo].items.splice(pocao,1);
+                        alert("De volta para a ação ⚔");
+                        atualizarSprites(alvo,"playernormal.svg",0);
+                    },600);
+                    
                 }else{
                     alert("Game Over :(")
                 }
@@ -58,7 +79,12 @@ class Personagem {
                         alert("Game Over :(")
                     }
                 }else{
-                    personagens[alvo].vida = personagens[alvo].vidaMax
+                    atualizarSprites(alvo,"inimigorenascer.svg",0);
+                    setTimeout(function(){
+                        personagens[alvo].vida = personagens[alvo].vidaMax
+                        alert("Mais um adversário!");
+                        atualizarSprites(alvo,"inimigonormal.svg",0);
+                    },600);
                 }
             }
             listarEstatisticas();
@@ -84,25 +110,38 @@ class Personagem {
         }
 
         this.curar = function(alvo){
-            if(personagens[alvo].vida <= 0){
-                personagens[alvo].ressucitar(alvo);
+            if(alvo == 0){
+                if(personagens[alvo].vida <= 0){
+                    personagens[alvo].ressucitar(alvo);
+                }else{
+                    let pocao = personagens[alvo].items.indexOf("Poção de cura");
+    
+                    if(pocao >= 1){
+                        let usarPocao = confirm("Deseja usar Poção de cura?");
+    
+                        if(usarPocao == true){
+                            personagens[alvo].vida += 3;
+                            personagens[alvo].items.splice(pocao,1);
+                            alert("Poção da cura usada!");
+                            atualizarSprites(alvo,"playercura.svg",0);
+                            atualizarSprites(alvo,"playernormal.svg",3000);
+                        }
+                    }else{
+                        alert("Você está sem poções!");
+                    }
+                    listarEstatisticas();
+                }
             }else{
                 let pocao = personagens[alvo].items.indexOf("Poção de cura");
-
+    
                 if(pocao >= 1){
-                    let usarPocao = confirm("Deseja usar Poção de cura?");
-
-                    if(usarPocao == true){
                         personagens[alvo].vida += 3;
                         personagens[alvo].items.splice(pocao,1);
-                        alert("Poção da cura usada!");
-                    }
-                }else{
-                    alert("Você está sem poções!");
+                        atualizarSprites(alvo,"inimigocura.svg",0);
+                        atualizarSprites(alvo,"inimigonormal.svg",3000);
                 }
                 listarEstatisticas();
-            }
-                
+            }              
         }
 
         this.ganharXp = function(xp){
@@ -131,24 +170,37 @@ class Personagem {
         this.sofrerDano = function(danoSofrido,alvo){
             if(alvo == 0){
                 alvo = 1;
+                personagens[alvo].vida -= danoSofrido;
+
+                atualizarSprites(alvo,"inimigodano.svg",0);
+                atualizarSprites(alvo,"inimigonormal.svg",300);
+
+                if(personagens[alvo].vida <= 0){
+                    personagens[alvo].vida = 0;
+                    atualizarSprites(alvo,"inimigomorte.svg",301);
+                }
+                listarEstatisticas(); 
             }else{
                 alvo = 0
-            }
+                personagens[alvo].vida -= danoSofrido;
 
-            personagens[alvo].vida -= danoSofrido;
+                atualizarSprites(alvo,"playerdano.svg",0);
+                atualizarSprites(alvo,"playernormal.svg",300);
 
-            if(personagens[alvo].vida <= 0){
-                personagens[alvo].vida = 0;
+                if(personagens[alvo].vida <= 0){
+                    personagens[alvo].vida = 0;
+                    atualizarSprites(alvo,"playermorte.svg",301);
+                }
+                listarEstatisticas(); 
             }
-            listarEstatisticas(); 
         }
     }
 }
 
 var personagens = [];
 
-personagens.push(new Personagem(0,"Link do Zelda","images/normal.svg",10,1,"Espada"));
-personagens.push(new Personagem(1,"Monstro","images/inimigo.svg",10,1,"Bastão"));
+personagens.push(new Personagem(0,"Darkami, O destemido","images/playernormal.svg",10,1,"Espada"));
+personagens.push(new Personagem(1,"Jack, O lendário","images/inimigonormal.svg",10,1,"Bastão"));
 
 // listar personagens
 listarEstatisticas();
